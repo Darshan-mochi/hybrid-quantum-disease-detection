@@ -1,0 +1,4 @@
+experiment,iterations,fixed_initial_weights,accuracy,recall,training_seconds,accuracy_percent,recall_percent
+VQC_baseline,20,False,0.475,0.357,19.519,47.5,35.7
+VQC_100_iterations,100,False,0.443,0.214,49.523,44.3,21.4
+VQC_fixed_weights,100,True,0.459,0.214,57.146,45.9,21.4
