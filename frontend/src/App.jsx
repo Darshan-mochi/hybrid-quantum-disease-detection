@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import "./App.css";
 
@@ -62,7 +61,7 @@ export default function App() {
     setError("");
 
     try {
-      const API_URL = import.meta.env.VITE_API_URL || "http://127.0.0.1:8000";
+      const API_URL = import.meta.env.VITE_API_URL;
       const response = await fetch(`${API_URL}/predict`, {
         method: "POST",
         headers: {
@@ -70,10 +69,7 @@ export default function App() {
         },
         body: JSON.stringify(
           Object.fromEntries(
-            Object.entries(values).map(([key, value]) => [
-              key,
-              Number(value),
-            ]),
+            Object.entries(values).map(([key, value]) => [key, Number(value)]),
           ),
         ),
       });
@@ -90,9 +86,7 @@ export default function App() {
 
       setResult(data);
     } catch (err) {
-      setError(
-        `${err.message}. Check that the FastAPI server is running.`,
-      );
+      setError(`${err.message}. Check that the FastAPI server is running.`);
     } finally {
       setLoading(false);
     }
@@ -122,9 +116,8 @@ export default function App() {
       <section className="notice">
         <strong>Research use only</strong>
         <p>
-          This educational prototype is not clinically validated.
-          Its output must not be used to diagnose disease or guide
-          treatment.
+          This educational prototype is not clinically validated. Its output
+          must not be used to diagnose disease or guide treatment.
         </p>
       </section>
 
@@ -145,9 +138,7 @@ export default function App() {
                   max={max}
                   step={step}
                   value={values[name]}
-                  onChange={(event) =>
-                    updateField(name, event.target.value)
-                  }
+                  onChange={(event) => updateField(name, event.target.value)}
                   required
                 />
               </label>
@@ -183,10 +174,7 @@ export default function App() {
           <p>
             Estimated positive-class probability:{" "}
             <strong>
-              {(
-                result.positive_class_probability * 100
-              ).toFixed(2)}
-              %
+              {(result.positive_class_probability * 100).toFixed(2)}%
             </strong>
           </p>
 
@@ -194,9 +182,7 @@ export default function App() {
             <div
               className="progressFill"
               style={{
-                width: `${
-                  result.positive_class_probability * 100
-                }%`,
+                width: `${result.positive_class_probability * 100}%`,
               }}
             />
           </div>
