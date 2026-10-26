@@ -10,7 +10,7 @@ import {
   Legend,
 } from "recharts";
 
-const API = "http://127.0.0.1:8000";
+const API = import.meta.env.VITE_API_URL || "http://127.0.0.1:8000";
 
 const tooltipStyle = {
   borderRadius: 14,
@@ -44,9 +44,7 @@ export default function ExperimentDashboard() {
       <div>
         <p className="eyebrow">SIH · MODEL EVALUATION</p>
         <h1>Experiment Dashboard</h1>
-        <p className="subtitle">
-          Recorded classical and quantum model results
-        </p>
+        <p className="subtitle">Recorded classical and quantum model results</p>
       </div>
       <a className="nav-link" href="/">
         Prediction page
@@ -205,7 +203,10 @@ export default function ExperimentDashboard() {
         )}
       </section>
 
-      <p className="muted" style={{ color: "rgba(255,255,255,0.78)", padding: "8px 8px 0" }}>
+      <p
+        className="muted"
+        style={{ color: "rgba(255,255,255,0.78)", padding: "8px 8px 0" }}
+      >
         The classical baseline uses four features. The recorded quantum
         experiments also use four features. Compare these only as research runs;
         repeated trials and uncertainty estimates are needed for stronger
