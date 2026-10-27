@@ -61,7 +61,7 @@ export default function App() {
     setError("");
 
     try {
-      const API_URL = import.meta.env.VITE_API_URL;
+      const API_URL = import.meta.env.API_URL;
       const response = await fetch(`${API_URL}/predict`, {
         method: "POST",
         headers: {

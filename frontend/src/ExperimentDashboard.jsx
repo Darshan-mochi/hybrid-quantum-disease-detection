@@ -10,7 +10,7 @@ import {
   Legend,
 } from "recharts";
 
-const API = import.meta.env.VITE_API_URL;
+const API = import.meta.env.API_URL;
 
 const tooltipStyle = {
   borderRadius: 14,
