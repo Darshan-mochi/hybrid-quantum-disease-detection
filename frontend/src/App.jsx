@@ -61,7 +61,7 @@ export default function App() {
     setError("");
 
     try {
-      const API_URL = import.meta.env.API_URL;
+      const API = import.meta.env.API_URL || "http://127.0.0.1:8000";
       const response = await fetch(`${API_URL}/predict`, {
         method: "POST",
         headers: {
