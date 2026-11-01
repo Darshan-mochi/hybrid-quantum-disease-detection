@@ -7,7 +7,7 @@ ROOT = Path(__file__).resolve().parent.parent
 RESULTS_DIR = ROOT / "data" / "experiments"
 RESULTS_DIR.mkdir(parents=True, exist_ok=True)
 
-# Results reported from your three experiments
+# Results recorded from the VQC experiments
 experiments = [
     {
         "experiment": "VQC_baseline",
@@ -32,6 +32,14 @@ experiments = [
         "accuracy": 0.459,
         "recall": 0.214,
         "training_seconds": 57.146,
+    },
+    {
+        "experiment": "VQC_informative_4_features",
+        "iterations": 100,
+        "fixed_initial_weights": True,
+        "accuracy": 0.787,
+        "recall": 0.821,
+        "training_seconds": 56.364,
     },
 ]
 

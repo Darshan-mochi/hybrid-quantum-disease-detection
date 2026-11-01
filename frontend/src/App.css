@@ -324,3 +324,142 @@ footer {
     grid-template-columns: 1fr;
   }
 }
+
+/* Experiment dashboard: a calm light surface with consistently readable text. */
+body:has(.app-page),
+body:has(.dashboard-page) {
+  color: #1e293b;
+  background:
+    radial-gradient(900px 500px at 0% 0%, #e0e7ff 0%, transparent 65%),
+    radial-gradient(800px 480px at 100% 0%, #d9f3f3 0%, transparent 62%),
+    linear-gradient(160deg, #f7f9ff 0%, #f3f8fb 100%);
+  background-attachment: fixed;
+}
+
+/* Main prediction page uses the same light visual language as the dashboard. */
+.app-page {
+  --ink: #1e293b;
+  --ink-soft: #334155;
+  --muted: #526176;
+  --paper: rgba(255, 255, 255, 0.96);
+  --line: #dce4ef;
+  --shadow: 0 12px 34px rgba(51, 65, 85, 0.09);
+  color: var(--ink);
+}
+
+.app-page .header {
+  color: var(--ink);
+  background: linear-gradient(120deg, #fff 0%, #f0f4ff 58%, #eaf8f8 100%);
+  border-color: #dce5f0;
+  box-shadow: 0 14px 38px rgba(51, 65, 85, 0.1);
+}
+
+.app-page .header h1,
+.app-page .header .subtitle { color: var(--ink); }
+.app-page .header .subtitle { color: #526176; }
+.app-page .header .eyebrow { color: #4f5f9f; }
+.app-page .status {
+  color: #166534;
+  background: #ecfdf3;
+  border-color: #bbf7d0;
+}
+.app-page .panel,
+.app-page .notice {
+  background: rgba(255, 255, 255, 0.96);
+  border-color: #dce4ef;
+  box-shadow: 0 10px 28px rgba(51, 65, 85, 0.075);
+}
+.app-page .notice {
+  background: linear-gradient(90deg, #fff8e9, #fff);
+  border-left-color: #e9a829;
+}
+.app-page .notice strong,
+.app-page .notice p { color: #713f12; }
+.app-page .field {
+  background: linear-gradient(180deg, #f8faff, #f0f8fa);
+  border-color: #dbe4f0;
+}
+.app-page input { border-color: #b8c5dc; }
+.app-page input:focus { border-color: #5367d8; outline-color: rgba(83, 103, 216, 0.22); }
+.app-page footer { color: #526176; }
+
+.dashboard-page {
+  --ink: #1e293b;
+  --ink-soft: #334155;
+  --muted: #526176;
+  --paper: rgba(255, 255, 255, 0.94);
+  --line: #dbe3ef;
+  --shadow: 0 12px 34px rgba(51, 65, 85, 0.09);
+  color: var(--ink);
+}
+
+.dashboard-header {
+  color: var(--ink);
+  background: linear-gradient(120deg, #fff 0%, #f0f4ff 58%, #eaf8f8 100%);
+  border: 1px solid #dce5f0;
+  box-shadow: 0 14px 38px rgba(51, 65, 85, 0.1);
+}
+
+.dashboard-header h1,
+.dashboard-header .subtitle {
+  color: var(--ink);
+}
+
+.dashboard-header .subtitle { color: #526176; }
+.dashboard-header .eyebrow { color: #4f5f9f; }
+
+.dashboard-page .panel,
+.dashboard-page .notice {
+  background: rgba(255, 255, 255, 0.96);
+  border-color: #dce4ef;
+  box-shadow: 0 10px 28px rgba(51, 65, 85, 0.075);
+}
+
+.dashboard-page .notice {
+  background: linear-gradient(90deg, #fff8e9, #fff);
+  border-left-color: #e9a829;
+}
+
+.dashboard-page .notice strong,
+.dashboard-page .notice p { color: #713f12; }
+.dashboard-page .muted { color: #526176; }
+
+.dashboard-page .refresh-button {
+  padding: 11px 17px;
+  color: #334155;
+  background: #fff;
+  border: 1px solid #cbd5e1;
+  box-shadow: 0 3px 9px rgba(51, 65, 85, 0.08);
+}
+
+.dashboard-page .refresh-button:hover:not(:disabled) {
+  background: #f1f5f9;
+  filter: none;
+}
+
+.chart-toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 14px;
+}
+
+.chart-toolbar .muted { margin: 0; }
+.metric-switch { display: inline-flex; gap: 4px; padding: 4px; background: #eef2f7; border-radius: 12px; }
+.dashboard-page .metric-switch button {
+  padding: 8px 14px;
+  color: #475569;
+  background: transparent;
+  box-shadow: none;
+  border-radius: 9px;
+  font-size: 0.88rem;
+}
+.dashboard-page .metric-switch button:hover:not(:disabled) { transform: none; filter: none; background: #e2e8f0; }
+.dashboard-page .metric-switch button.active { color: #fff; background: #4f5fc7; box-shadow: 0 2px 7px rgba(79, 95, 199, 0.25); }
+
+@media (max-width: 560px) {
+  .dashboard-header .header-actions { width: 100%; }
+  .dashboard-header .header-actions > * { justify-content: center; }
+  .chart-toolbar { align-items: flex-start; flex-direction: column; }
+}

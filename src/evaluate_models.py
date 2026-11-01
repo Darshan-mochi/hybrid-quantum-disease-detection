@@ -2,7 +2,6 @@
 from pathlib import Path
 import time
 
-import joblib
 import numpy as np
 import pandas as pd
 
@@ -22,7 +21,6 @@ from sklearn.metrics import (
 
 ROOT = Path(__file__).resolve().parent.parent
 DATA_PATH = ROOT / "data" / "processed.cleveland.data"
-MODELS_DIR = ROOT / "models"
 OUTPUT_DIR = ROOT / "data" / "experiments"
 OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
 
@@ -31,7 +29,7 @@ COLUMNS = [
     "restecg", "thalach", "exang", "oldpeak",
     "slope", "ca", "thal", "target",
 ]
-FEATURES = ["age", "trestbps", "chol", "thalach"]
+FEATURES = ["cp", "thalach", "oldpeak", "ca"]
 
 df = pd.read_csv(
     DATA_PATH,
@@ -104,72 +102,44 @@ print(classification_report(y_test, classical_pred))
 print("Confusion matrix:")
 print(confusion_matrix(y_test, classical_pred))
 
-# The saved quantum weights are not, by themselves, a complete
-# classifier. Evaluate VQC after reconstructing the same circuit.
-weights_path = MODELS_DIR / "vqc_4qubits_weights.npy"
+from qiskit.circuit.library import z_feature_map, real_amplitudes
+from qiskit_machine_learning.algorithms import VQC
+from qiskit_machine_learning.optimizers import COBYLA
 
-if weights_path.exists():
-    from qiskit.circuit.library import (
-        z_feature_map,
-        real_amplitudes,
+feature_map = z_feature_map(feature_dimension=4, reps=1)
+ansatz = real_amplitudes(num_qubits=4, reps=1)
+initial_point = np.random.default_rng(42).uniform(
+    -np.pi, np.pi, size=ansatz.num_parameters
+)
+vqc = VQC(
+    feature_map=feature_map,
+    ansatz=ansatz,
+    optimizer=COBYLA(maxiter=100),
+    initial_point=initial_point,
+)
+
+start = time.perf_counter()
+vqc.fit(X_train_encoded, y_train.to_numpy())
+quantum_seconds = time.perf_counter() - start
+quantum_pred = np.asarray(vqc.predict(X_test_encoded)).reshape(-1).astype(int)
+quantum_prob = np.asarray(vqc.predict_proba(X_test_encoded))
+if quantum_prob.ndim == 2:
+    quantum_prob = quantum_prob[:, 1]
+
+results.append(
+    summarize(
+        "Quantum VQC (cp, thalach, oldpeak, ca)",
+        y_test,
+        quantum_pred,
+        quantum_prob,
+        quantum_seconds,
     )
-    from qiskit_machine_learning.algorithms import VQC
-    from qiskit_machine_learning.optimizers import COBYLA
+)
 
-    feature_map = z_feature_map(
-        feature_dimension=4,
-        reps=1,
-    )
-    ansatz = real_amplitudes(
-        num_qubits=4,
-        reps=1,
-    )
-
-    initial_weights = np.load(weights_path)
-
-    vqc = VQC(
-        feature_map=feature_map,
-        ansatz=ansatz,
-        optimizer=COBYLA(maxiter=100),
-        initial_point=initial_weights,
-    )
-
-    # Refit the circuit on the training split for a reproducible
-    # evaluation procedure. This is a new training run.
-    start = time.perf_counter()
-    vqc.fit(X_train_encoded, y_train.to_numpy())
-    quantum_seconds = time.perf_counter() - start
-
-    quantum_pred = np.asarray(
-        vqc.predict(X_test_encoded)
-    ).reshape(-1).astype(int)
-
-    quantum_prob = np.asarray(
-        vqc.predict_proba(X_test_encoded)
-    )
-
-    if quantum_prob.ndim == 2:
-        quantum_prob = quantum_prob[:, 1]
-
-    results.append(
-        summarize(
-            "Quantum VQC (4 qubits)",
-            y_test,
-            quantum_pred,
-            quantum_prob,
-            quantum_seconds,
-        )
-    )
-
-    print("\nQUANTUM MODEL")
-    print(classification_report(y_test, quantum_pred))
-    print("Confusion matrix:")
-    print(confusion_matrix(y_test, quantum_pred))
-else:
-    print(
-        "\nSaved VQC weights were not found. "
-        "Only the classical model was evaluated."
-    )
+print("\nQUANTUM MODEL")
+print(classification_report(y_test, quantum_pred))
+print("Confusion matrix:")
+print(confusion_matrix(y_test, quantum_pred))
 
 results_df = pd.DataFrame(results)
 output_file = OUTPUT_DIR / "evaluation_results.csv"

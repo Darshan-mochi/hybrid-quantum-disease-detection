@@ -2,7 +2,6 @@ import { useState } from "react";
 import "./App.css";
 
 import ExperimentDashboard from "./ExperimentDashboard";
-import ModelComparison from "./ModelComparison";
 
 const initialValues = {
   age: 55,
@@ -61,7 +60,7 @@ export default function App() {
     setError("");
 
     try {
-      const API_URL = import.meta.env.API_URL;
+      const API_URL = import.meta.env.API_URL || "http://127.0.0.1:8000";
       const response = await fetch(`${API_URL}/predict`, {
         method: "POST",
         headers: {
@@ -95,7 +94,7 @@ export default function App() {
   const isPositive = result?.label === "positive_class";
 
   return (
-    <main className="page">
+    <main className="page app-page">
       <header className="header">
         <div>
           <p className="eyebrow">SIH · MACHINE LEARNING RESEARCH</p>
@@ -190,9 +189,6 @@ export default function App() {
           <p className="muted">{result.notice}</p>
         </section>
       )}
-
-      {/* Model comparison appears at the end of the main page. */}
-      <ModelComparison />
 
       <footer>
         Research prototype · UCI Heart Disease dataset · Not for clinical use

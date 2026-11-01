@@ -136,20 +136,38 @@ def get_experiments():
     experiments_df = pd.read_csv(results_path)
     importance = []
 
+    comparison_path = ROOT / "quantum_comparison.csv"
+    if comparison_path.exists():
+        comparison_df = pd.read_csv(comparison_path)
+        baseline_row = comparison_df.loc[
+            comparison_df["Model"] == "Logistic Regression (4 features)"
+        ]
+    else:
+        baseline_row = pd.DataFrame()
+
     if importance_path.exists():
         importance_df = pd.read_csv(importance_path)
         importance = importance_df.head(10).to_dict(
             orient="records"
         )
 
-    # Classical baseline values from your previously reported run.
-    # These use four features and are not the full 13-feature model.
-    classical_baseline = {
-        "experiment": "Logistic Regression (4-feature baseline)",
-        "accuracy": 0.754,
-        "recall": 0.679,
-        "training_seconds": 0.011,
-    }
+    # Keep the dashboard's baseline synchronized with the most recent
+    # same-split, same-feature comparison when it is available.
+    if not baseline_row.empty:
+        baseline = baseline_row.iloc[0]
+        classical_baseline = {
+            "experiment": "Logistic Regression (same 4 features)",
+            "accuracy": float(baseline["Accuracy"]),
+            "recall": float(baseline["Recall"]),
+            "training_seconds": float(baseline["Training_seconds"]),
+        }
+    else:
+        classical_baseline = {
+            "experiment": "Logistic Regression (4-feature baseline)",
+            "accuracy": 0.754,
+            "recall": 0.679,
+            "training_seconds": 0.011,
+        }
 
     return {
         "experiments": experiments_df.to_dict(orient="records"),

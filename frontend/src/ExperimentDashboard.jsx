@@ -10,7 +10,7 @@ import {
   Legend,
 } from "recharts";
 
-const API = import.meta.env.API_URL;
+const API = import.meta.env.API_URL || "http://127.0.0.1:8000";
 
 const tooltipStyle = {
   borderRadius: 14,
@@ -24,8 +24,12 @@ export default function ExperimentDashboard() {
   const [data, setData] = useState(null);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(true);
+  const [metric, setMetric] = useState("accuracy");
+  const [refreshKey, setRefreshKey] = useState(0);
 
   useEffect(() => {
+    setLoading(true);
+    setError("");
     fetch(`${API}/experiments`)
       .then(async (response) => {
         if (!response.ok) {
@@ -37,24 +41,27 @@ export default function ExperimentDashboard() {
       .then(setData)
       .catch((err) => setError(err.message))
       .finally(() => setLoading(false));
-  }, []);
+  }, [refreshKey]);
 
   const pageHeader = (
-    <header className="header">
+    <header className="header dashboard-header">
       <div>
         <p className="eyebrow">SIH · MODEL EVALUATION</p>
         <h1>Experiment Dashboard</h1>
         <p className="subtitle">Recorded classical and quantum model results</p>
       </div>
-      <a className="nav-link" href="/">
-        Prediction page
-      </a>
+      <div className="header-actions">
+        <button className="refresh-button" onClick={() => setRefreshKey((key) => key + 1)} disabled={loading}>
+          {loading ? "Refreshing…" : "Refresh results"}
+        </button>
+        <a className="nav-link" href="/">Prediction page</a>
+      </div>
     </header>
   );
 
   if (loading) {
     return (
-      <main className="page">
+      <main className="page dashboard-page">
         {pageHeader}
         <section className="panel state-card">Loading experiments...</section>
       </main>
@@ -63,7 +70,7 @@ export default function ExperimentDashboard() {
 
   if (error) {
     return (
-      <main className="page">
+      <main className="page dashboard-page">
         {pageHeader}
         <section className="panel error state-card">
           Could not load results: {error}
@@ -97,7 +104,7 @@ export default function ExperimentDashboard() {
   }));
 
   return (
-    <main className="page">
+    <main className="page dashboard-page">
       {pageHeader}
 
       <section className="notice">
@@ -107,7 +114,16 @@ export default function ExperimentDashboard() {
 
       <section className="panel">
         <h2>Accuracy and recall</h2>
-        <p className="muted">Percentages from your recorded experiments.</p>
+        <div className="chart-toolbar">
+          <p className="muted">Choose a metric to compare across recorded experiments.</p>
+          <div className="metric-switch" role="group" aria-label="Chart metric">
+            {["accuracy", "recall"].map((value) => (
+              <button key={value} className={metric === value ? "active" : ""} onClick={() => setMetric(value)} aria-pressed={metric === value}>
+                {value === "accuracy" ? "Accuracy" : "Recall"}
+              </button>
+            ))}
+          </div>
+        </div>
         <div className="chart-wrap">
           <ResponsiveContainer>
             <BarChart data={rows} margin={{ bottom: 65, left: 8, right: 8 }}>
@@ -123,18 +139,7 @@ export default function ExperimentDashboard() {
               <YAxis domain={[0, 100]} tick={{ fill: "#334155" }} />
               <Tooltip contentStyle={tooltipStyle} />
               <Legend />
-              <Bar
-                dataKey="accuracy"
-                name="Accuracy (%)"
-                fill="#7c3aed"
-                radius={[8, 8, 0, 0]}
-              />
-              <Bar
-                dataKey="recall"
-                name="Recall (%)"
-                fill="#06b6d4"
-                radius={[8, 8, 0, 0]}
-              />
+              <Bar dataKey={metric} name={`${metric === "accuracy" ? "Accuracy" : "Recall"} (%)`} fill={metric === "accuracy" ? "#5367d8" : "#168b98"} radius={[8, 8, 0, 0]} animationDuration={450} />
             </BarChart>
           </ResponsiveContainer>
         </div>
@@ -205,7 +210,7 @@ export default function ExperimentDashboard() {
 
       <p
         className="muted"
-        style={{ color: "rgba(255,255,255,0.78)", padding: "8px 8px 0" }}
+        style={{ padding: "8px 8px 0" }}
       >
         The classical baseline uses four features. The recorded quantum
         experiments also use four features. Compare these only as research runs;

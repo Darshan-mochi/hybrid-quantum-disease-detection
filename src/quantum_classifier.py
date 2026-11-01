@@ -48,8 +48,10 @@ df = pd.read_csv(
 df = df.apply(pd.to_numeric, errors="coerce")
 df = df.dropna(subset=["target"]).copy()
 
-# 3. Select four numerical features
-features = ["age", "trestbps", "chol", "thalach"]
+# 3. Select four clinically informative features for the four-qubit circuit.
+# These include symptom, ECG response, and exercise-related signals that are
+# more directly associated with the target than the previous baseline set.
+features = ["cp", "thalach", "oldpeak", "ca"]
 X = df[features]
 y = (df["target"] > 0).astype(int)
 
